@@ -1,0 +1,15 @@
+{{ define "main" }}
+  <header class="mt-5 max-w-prose">
+    {{ if site.Params.taxonomy.showBreadcrumbs | default false }}
+      {{ partial "breadcrumbs.html" . }}
+    {{ end }}
+    <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+      {{ .Title | emojify }}
+    </h1>
+    <p class="mt-3 text-lg leading-relaxed text-neutral-500 dark:text-neutral-400">
+      {{ i18n "tech_institution_intro" (dict "name" .Title) }}
+    </p>
+  </header>
+
+  {{ partial "technology-filter-list.html" (dict "context" . "pages" .Pages.ByTitle "showCount" true) }}
+{{ end }}

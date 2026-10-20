@@ -1,0 +1,76 @@
+colorScheme = "123factory"
+defaultAppearance = "dark"
+autoSwitchAppearance = true
+copyright = "© { year } 123 Factory GmbH"
+
+enableSearch = true
+enableCodeCopy = true
+
+mainSections = ["technologies"]
+
+# NEW n8n webhook that receives showroom request-form submissions
+# (meeting requests + technical-datasheet requests). Create a dedicated
+# webhook for the showroom and paste its URL here. Leave empty to disable.
+showroomWebhookURL = ""
+
+disableImageOptimization = false
+disableImageOptimizationMD = false
+disableTextInHeader = false
+hotlinkFeatureImage = false
+
+fingerprintAlgorithm = "sha512"
+
+[header]
+  layout = "fixed-fill-blur"
+
+[footer]
+  showMenu = true
+  showCopyright = true
+  showThemeAttribution = false
+  showAppearanceSwitcher = true
+  showScrollToTop = true
+
+[homepage]
+  layout = "profile"
+  showRecent = true
+  showRecentItems = 100
+  showMoreLink = false
+  showMoreLinkDest = "/technologies/"
+  cardView = true
+  cardViewScreenWidth = false
+  layoutBackgroundBlur = false
+  disableHeroImageFilter = false
+
+[article]
+  showDate = false
+  showAuthor = false
+  showBreadcrumbs = true
+  showDraftLabel = true
+  showHeadingAnchors = true
+  showPagination = false
+  showReadingTime = false
+  showTableOfContents = false
+  showTaxonomies = false
+  showCategories = false
+  showTags = false
+  showWordCount = false
+
+[list]
+  showBreadcrumbs = true
+  showSummary = true
+  showTableOfContents = false
+  showCards = false
+  groupByYear = false
+  cardView = false
+
+[taxonomy]
+  showHero = false
+  showBreadcrumbs = true
+  showTableOfContents = false
+  cardView = false
+
+[term]
+  showHero = false
+  showBreadcrumbs = true
+  showTableOfContents = false
+  groupByYear = false

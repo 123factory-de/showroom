@@ -1,0 +1,46 @@
+{{ $page := . }}
+{{ $domains := $page.Params.domains | default (slice) }}
+{{ $trl := $page.Params.trl | default "" }}
+{{ $collab := $page.Params.collaboration | default (slice) }}
+{{ $isSample := $page.Params.is_sample | default false }}
+
+<article class="tech-card" data-tech-id="{{ $page.File.ContentBaseName }}" data-tech-domains="{{ delimit $domains "||" }}">
+  <div class="tech-card-body">
+    <div class="tech-card-toprow">
+      {{ with $trl }}<span class="tech-card-trl">{{ . }}</span>{{ end }}
+      {{ if $isSample }}<span class="tech-card-sample">{{ i18n "tech_sample_badge" }}</span>{{ end }}
+    </div>
+
+    {{ with $domains }}
+      <div class="tech-card-domains" aria-label="{{ i18n "tech_domains_label" }}">
+        {{ range . }}
+          <button class="tech-domain" type="button" data-filter-domain="{{ . }}">{{ . }}</button>
+        {{ end }}
+      </div>
+    {{ end }}
+
+    <a class="tech-card-title" href="{{ $page.RelPermalink }}">{{ $page.Title | emojify }}</a>
+
+    {{ with $page.Params.institutions }}
+      <span class="tech-card-source">{{ index . 0 }}</span>
+    {{ end }}
+
+    {{ with $page.Description }}
+      <p class="tech-card-summary">{{ . }}</p>
+    {{ else }}
+      <p class="tech-card-summary">{{ $page.Summary | plainify }}</p>
+    {{ end }}
+
+    {{ with $collab }}
+      <div class="tech-card-collab" aria-label="{{ i18n "tech_fact_collaboration" }}">
+        {{ range first 4 . }}
+          <span class="tech-card-collab-tag">{{ . }}</span>
+        {{ end }}
+      </div>
+    {{ end }}
+  </div>
+
+  <div class="tech-card-actions">
+    <a class="tech-card-link" href="{{ $page.RelPermalink }}">{{ i18n "tech_view_details" }}</a>
+  </div>
+</article>

@@ -1,0 +1,514 @@
+{{ $fixedTechnology := .fixedTechnology }}
+{{ $webhook := site.Params.showroomWebhookURL | default "" }}
+
+<div
+  class="sr-request"
+  data-sr-request
+  data-sr-webhook="{{ $webhook }}"
+  data-sr-locale="{{ site.Language.Lang }}"
+>
+  <button class="sr-request-trigger" type="button" data-sr-open>
+    {{ i18n "request_button" }}
+  </button>
+
+  <div class="sr-modal" data-sr-modal hidden>
+    <div class="sr-modal-overlay" data-sr-dismiss></div>
+
+    <div class="sr-modal-card" role="dialog" aria-modal="true" aria-labelledby="sr-modal-title">
+      <button class="sr-modal-close" type="button" data-sr-dismiss aria-label="{{ i18n "request_close" }}">&times;</button>
+
+      <h2 class="sr-modal-title" id="sr-modal-title">{{ i18n "request_title" }}</h2>
+      <p class="sr-modal-subtitle">{{ i18n "request_subtitle" }}</p>
+
+      <form class="sr-form" data-sr-form novalidate>
+        <fieldset class="sr-field sr-types">
+          <legend class="sr-field-label">{{ i18n "request_type_label" }} <span class="sr-required">*</span></legend>
+          <label class="sr-type-option">
+            <input type="radio" name="requestType" value="meeting" checked>
+            <span>{{ i18n "request_type_meeting" }}</span>
+          </label>
+          <label class="sr-type-option">
+            <input type="radio" name="requestType" value="datasheet">
+            <span>{{ i18n "request_type_datasheet" }}</span>
+          </label>
+        </fieldset>
+
+        {{ with $fixedTechnology }}
+          <label class="sr-field">
+            <span class="sr-field-label">{{ i18n "request_technology" }}</span>
+            <input type="text" value="{{ .Title | emojify }}" readonly>
+          </label>
+          <input type="hidden" name="technology" value="{{ .Title }}" data-tech-id="{{ .File.ContentBaseName }}">
+        {{ end }}
+
+        <div class="sr-field-row">
+          <label class="sr-field">
+            <span class="sr-field-label">{{ i18n "request_first_name" }} <span class="sr-required">*</span></span>
+            <input type="text" name="firstName" autocomplete="given-name" required>
+          </label>
+          <label class="sr-field">
+            <span class="sr-field-label">{{ i18n "request_last_name" }} <span class="sr-required">*</span></span>
+            <input type="text" name="lastName" autocomplete="family-name" required>
+          </label>
+        </div>
+
+        <label class="sr-field">
+          <span class="sr-field-label">{{ i18n "request_company_name" }} <span class="sr-required">*</span></span>
+          <input type="text" name="companyName" autocomplete="organization" required>
+        </label>
+
+        <label class="sr-field">
+          <span class="sr-field-label">{{ i18n "request_email" }} <span class="sr-required">*</span></span>
+          <input type="email" name="email" autocomplete="email" required>
+        </label>
+
+        <label class="sr-field">
+          <span class="sr-field-label">{{ i18n "request_phone" }} <span class="sr-field-hint">({{ i18n "request_optional" }})</span></span>
+          <input type="tel" name="phone" autocomplete="tel">
+        </label>
+
+        <label class="sr-field">
+          <span class="sr-field-label">{{ i18n "request_message" }} <span class="sr-field-hint">({{ i18n "request_optional" }})</span></span>
+          <textarea name="message" rows="4"></textarea>
+        </label>
+
+        <label class="sr-consent">
+          <input type="checkbox" name="consent" value="yes" required>
+          <span>{{ i18n "request_consent" }} <span class="sr-required">*</span></span>
+        </label>
+
+        <p class="sr-form-status" data-sr-status role="status" aria-live="polite" hidden></p>
+
+        <div class="sr-form-actions">
+          <button class="sr-btn sr-btn-secondary" type="button" data-sr-dismiss>{{ i18n "request_cancel" }}</button>
+          <button class="sr-btn sr-btn-primary" type="submit" data-sr-submit>{{ i18n "request_submit" }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="sr-toast" data-sr-toast role="status" aria-live="polite" hidden></div>
+</div>
+
+<style>
+  .sr-request { margin: 1.25rem 0 0; }
+
+  .sr-request-trigger {
+    background: #4c9b87;
+    border: 1px solid #4c9b87;
+    border-radius: 999px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 800;
+    padding: 0.7rem 1.4rem;
+    transition: background-color 160ms ease, border-color 160ms ease;
+  }
+
+  .sr-request-trigger:hover { background: #3f8977; border-color: #3f8977; }
+
+  .dark .sr-request-trigger { background: #69b7a2; border-color: #69b7a2; color: #101010; }
+  .dark .sr-request-trigger:hover { background: #5aa791; border-color: #5aa791; }
+
+  .sr-modal[hidden] { display: none; }
+
+  .sr-modal {
+    align-items: flex-start;
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 2.5rem 1rem;
+    position: fixed;
+    z-index: 1000;
+  }
+
+  .sr-modal-overlay { background: rgba(15, 15, 15, 0.6); inset: 0; position: fixed; }
+
+  .sr-modal-card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.75rem;
+    box-shadow: 0 24px 60px rgba(22, 22, 22, 0.25);
+    max-width: 36rem;
+    padding: 1.75rem;
+    position: relative;
+    width: 100%;
+  }
+
+  .dark .sr-modal-card {
+    background: #1c1c1c;
+    border-color: rgba(212, 212, 212, 0.16);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .sr-modal-close {
+    background: none;
+    border: none;
+    color: #737373;
+    cursor: pointer;
+    font-size: 1.6rem;
+    line-height: 1;
+    padding: 0.25rem;
+    position: absolute;
+    right: 1rem;
+    top: 0.85rem;
+  }
+
+  .sr-modal-close:hover { color: #404040; }
+  .dark .sr-modal-close { color: #a3a3a3; }
+  .dark .sr-modal-close:hover { color: #e5e5e5; }
+
+  .sr-modal-title {
+    color: #171717;
+    font-size: 1.5rem;
+    font-weight: 850;
+    margin: 0;
+    padding-right: 2rem;
+  }
+
+  .dark .sr-modal-title { color: #f5f5f5; }
+
+  .sr-modal-subtitle { color: #525252; font-size: 0.92rem; margin: 0.4rem 0 1.25rem; }
+  .dark .sr-modal-subtitle { color: #d4d4d4; }
+
+  .sr-form { display: flex; flex-direction: column; gap: 1rem; }
+
+  .sr-field-row { display: grid; gap: 1rem; grid-template-columns: 1fr 1fr; }
+
+  @media (max-width: 30rem) {
+    .sr-field-row { grid-template-columns: 1fr; }
+  }
+
+  .sr-field {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+  }
+
+  .sr-field-label { color: #404040; font-size: 0.82rem; font-weight: 800; }
+  .dark .sr-field-label { color: #d4d4d4; }
+
+  .sr-field-hint { color: #a3a3a3; font-weight: 600; }
+  .sr-required { color: #d6453d; }
+
+  .sr-field input:not([type="checkbox"]):not([type="radio"]),
+  .sr-field textarea {
+    background: #ffffff;
+    border: 1px solid #d4d4d4;
+    border-radius: 0.5rem;
+    color: #171717;
+    font-size: 0.92rem;
+    padding: 0.6rem 0.7rem;
+    width: 100%;
+  }
+
+  .sr-field textarea { resize: vertical; }
+
+  .sr-field input:not([type="checkbox"]):not([type="radio"]):focus,
+  .sr-field textarea:focus {
+    border-color: #4c9b87;
+    outline: 2px solid rgba(76, 155, 135, 0.25);
+    outline-offset: 0;
+  }
+
+  .sr-field input[readonly] { background: #f5f5f5; color: #525252; }
+
+  .dark .sr-field input,
+  .dark .sr-field textarea {
+    background: rgba(38, 38, 38, 0.84);
+    border-color: rgba(212, 212, 212, 0.2);
+    color: #f5f5f5;
+  }
+
+  .dark .sr-field input[readonly] { background: rgba(38, 38, 38, 0.5); color: #a3a3a3; }
+
+  .sr-field input.is-invalid,
+  .sr-types.is-invalid,
+  .sr-consent.is-invalid { border-color: #d6453d; }
+
+  .sr-types {
+    border: 1px solid #e5e5e5;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0.85rem;
+  }
+
+  .dark .sr-types { border-color: rgba(212, 212, 212, 0.16); }
+
+  .sr-types legend { padding: 0 0.35rem; }
+
+  .sr-type-option {
+    align-items: center;
+    color: #404040;
+    cursor: pointer;
+    display: flex;
+    font-size: 0.9rem;
+    gap: 0.5rem;
+  }
+
+  .dark .sr-type-option { color: #e5e5e5; }
+
+  .sr-type-option input[type="radio"] {
+    accent-color: #4c9b87;
+    appearance: auto;
+    -webkit-appearance: radio;
+    height: 1.05rem;
+    margin: 0;
+    width: 1.05rem;
+  }
+
+  .sr-consent {
+    align-items: flex-start;
+    color: #525252;
+    display: flex;
+    font-size: 0.85rem;
+    gap: 0.55rem;
+    line-height: 1.5;
+  }
+
+  .dark .sr-consent { color: #d4d4d4; }
+
+  .sr-consent input[type="checkbox"] {
+    accent-color: #4c9b87;
+    appearance: auto;
+    -webkit-appearance: checkbox;
+    flex-shrink: 0;
+    height: 1.05rem;
+    margin-top: 0.1rem;
+    width: 1.05rem;
+  }
+
+  .sr-form-status { border-radius: 0.5rem; font-size: 0.9rem; margin: 0; padding: 0.7rem 0.85rem; }
+  .sr-form-status.is-error { background: rgba(214, 69, 61, 0.12); color: #b03a33; }
+  .sr-form-status.is-success { background: rgba(76, 155, 135, 0.14); color: #2f7f6d; }
+  .dark .sr-form-status.is-error { color: #f0a59f; }
+  .dark .sr-form-status.is-success { color: #8bd2be; }
+
+  .sr-form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 0.25rem; }
+
+  .sr-btn { border-radius: 999px; cursor: pointer; font-size: 0.92rem; font-weight: 800; padding: 0.65rem 1.25rem; }
+
+  .sr-btn-secondary { background: #ffffff; border: 1px solid #d4d4d4; color: #404040; }
+  .sr-btn-secondary:hover { border-color: #a3a3a3; }
+  .dark .sr-btn-secondary { background: transparent; border-color: rgba(212, 212, 212, 0.24); color: #e5e5e5; }
+
+  .sr-btn-primary { background: #4c9b87; border: 1px solid #4c9b87; color: #ffffff; }
+  .sr-btn-primary:hover { background: #3f8977; border-color: #3f8977; }
+  .sr-btn-primary:disabled { cursor: not-allowed; opacity: 0.6; }
+  .dark .sr-btn-primary { background: #69b7a2; border-color: #69b7a2; color: #101010; }
+
+  .sr-toast[hidden] { display: none; }
+
+  .sr-toast {
+    align-items: center;
+    background: #2f7f6d;
+    border-radius: 0.6rem;
+    bottom: 1.5rem;
+    box-shadow: 0 12px 32px rgba(22, 22, 22, 0.28);
+    color: #ffffff;
+    display: flex;
+    font-size: 0.92rem;
+    font-weight: 700;
+    gap: 0.55rem;
+    left: 50%;
+    max-width: calc(100vw - 2rem);
+    opacity: 0;
+    padding: 0.85rem 1.15rem;
+    position: fixed;
+    transform: translate(-50%, 1rem);
+    transition: opacity 220ms ease, transform 220ms ease;
+    z-index: 1100;
+  }
+
+  .sr-toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+  .sr-toast::before { content: "\2713"; font-weight: 900; }
+  .dark .sr-toast { background: #69b7a2; color: #101010; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sr-toast { transition: opacity 220ms ease; transform: translate(-50%, 0); }
+  }
+</style>
+
+<script>
+  (() => {
+    const root = document.querySelector("[data-sr-request]");
+    if (!root) return;
+
+    const modal = root.querySelector("[data-sr-modal]");
+    const form = root.querySelector("[data-sr-form]");
+    const statusEl = root.querySelector("[data-sr-status]");
+    const toastEl = root.querySelector("[data-sr-toast]");
+    const submitBtn = root.querySelector("[data-sr-submit]");
+    const webhook = root.dataset.srWebhook || "";
+    const locale = root.dataset.srLocale || "en";
+
+    const messages = {
+      sending: {{ i18n "request_sending" }},
+      submitLabel: {{ i18n "request_submit" }},
+      success: {{ i18n "request_success" }},
+      error: {{ i18n "request_error" }},
+      notConfigured: {{ i18n "request_not_configured" }},
+      consentError: {{ i18n "request_consent_error" }},
+    };
+
+    let lastFocused = null;
+    let toastTimer = null;
+
+    const showToast = (text) => {
+      toastEl.textContent = text;
+      toastEl.hidden = false;
+      void toastEl.offsetWidth;
+      toastEl.classList.add("is-visible");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastEl.classList.remove("is-visible");
+        setTimeout(() => { toastEl.hidden = true; }, 240);
+      }, 4000);
+    };
+
+    const showStatus = (text, kind) => {
+      statusEl.textContent = text;
+      statusEl.classList.toggle("is-error", kind === "error");
+      statusEl.classList.toggle("is-success", kind === "success");
+      statusEl.hidden = false;
+    };
+
+    const clearStatus = () => {
+      statusEl.hidden = true;
+      statusEl.textContent = "";
+      statusEl.classList.remove("is-error", "is-success");
+    };
+
+    const openModal = () => {
+      lastFocused = document.activeElement;
+      modal.hidden = false;
+      document.body.style.overflow = "hidden";
+      const firstInput = form.querySelector('input[name="firstName"]');
+      if (firstInput) firstInput.focus();
+    };
+
+    const closeModal = () => {
+      modal.hidden = true;
+      document.body.style.overflow = "";
+      if (lastFocused && typeof lastFocused.focus === "function") lastFocused.focus();
+    };
+
+    root.querySelector("[data-sr-open]").addEventListener("click", openModal);
+    root.querySelectorAll("[data-sr-dismiss]").forEach((el) => el.addEventListener("click", closeModal));
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !modal.hidden) closeModal();
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearStatus();
+
+      let valid = true;
+
+      form.querySelectorAll('input[required]:not([type="checkbox"])').forEach((input) => {
+        const ok = input.checkValidity();
+        input.classList.toggle("is-invalid", !ok);
+        if (!ok && valid) { valid = false; input.focus(); }
+      });
+
+      const consent = form.querySelector('input[name="consent"]');
+      if (consent && !consent.checked) {
+        if (valid) showStatus(messages.consentError, "error");
+        valid = false;
+      }
+
+      if (!valid) {
+        if (statusEl.hidden) showStatus(messages.consentError, "error");
+        return;
+      }
+
+      if (!webhook) {
+        showStatus(messages.notConfigured, "error");
+        return;
+      }
+
+      const requestType = (form.querySelector('input[name="requestType"]:checked') || {}).value || "meeting";
+      const techInput = form.querySelector('input[name="technology"]');
+      const technology = techInput ? techInput.value.trim() : "";
+      const techId = techInput ? (techInput.dataset.techId || "") : "";
+      const firstName = form.firstName.value.trim();
+      const lastName = form.lastName.value.trim();
+      const companyName = form.companyName.value.trim();
+      const email = form.email.value.trim();
+      const phone = form.phone.value.trim();
+      const message = form.message.value.trim();
+      const submissionTime = new Date().toISOString();
+
+      const typeLabel = requestType === "datasheet" ? "Datasheet request" : "Meeting request";
+      const fullName = [firstName, lastName].filter(Boolean).join(" ");
+      const subject = "New " + typeLabel.toLowerCase() + ": " + fullName +
+        (companyName ? " (" + companyName + ")" : "") +
+        (technology ? " — " + technology : "");
+
+      // label/value pairs consumed by the n8n → Slack formatter.
+      const submissions = [
+        { label: "Subject", value: subject },
+        { label: "Request type", value: typeLabel },
+        { label: "Technology", value: technology },
+        { label: "First name", value: firstName },
+        { label: "Last name", value: lastName },
+        { label: "Company name", value: companyName },
+        { label: "Email address", value: email },
+      ];
+      if (phone) submissions.push({ label: "Phone number", value: phone });
+      if (message) submissions.push({ label: "Message", value: message });
+
+      const payload = {
+        subject: subject,
+        locale: locale,
+        submissionTime: submissionTime,
+        pageUrl: window.location.href,
+        data: {
+          subject: subject,
+          locale: locale,
+          submissions: submissions,
+          requestType: requestType,
+          technology: technology,
+          techId: techId,
+          firstName: firstName,
+          lastName: lastName,
+          companyName: companyName,
+          email: email,
+          phone: phone,
+          message: message,
+          consent: true,
+        },
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = messages.sending;
+
+      try {
+        const response = await fetch(webhook, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) throw new Error("Request failed with status " + response.status);
+
+        form.reset();
+        form.querySelectorAll(".is-invalid").forEach((el) => el.classList.remove("is-invalid"));
+        clearStatus();
+        closeModal();
+        showToast(messages.success);
+      } catch (error) {
+        showStatus(messages.error, "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = messages.submitLabel;
+      }
+    });
+  })();
+</script>
