@@ -1,0 +1,9 @@
+[[main]]
+  name = "Technologies"
+  pageRef = "/"
+  weight = 10
+
+[[main]]
+  name = "Institutions"
+  pageRef = "/institutions/"
+  weight = 20

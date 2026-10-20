@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,follow">
+  <title>{{ .Title }}</title>
+  {{ $home := .Site.Home.RelPermalink }}
+  <link rel="canonical" href="{{ .Site.Home.Permalink }}">
+  <script>
+    // The technology list lives on the home page. Redirect while keeping
+    // any ?domain= / #hash so filter links continue to work.
+    location.replace({{ $home | jsonify }} + location.search + location.hash);
+  </script>
+  <meta http-equiv="refresh" content="0; url={{ $home }}">
+</head>
+<body>
+  <p>Redirecting to <a href="{{ $home }}">the showroom</a>…</p>
+</body>
+</html>

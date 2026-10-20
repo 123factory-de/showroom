@@ -1,0 +1,49 @@
+# Showroom UI strings. English only for now; add i18n/<lang>.yaml later
+# (e.g. i18n/ko.yaml) to localize without touching templates.
+
+# --- Technology cards / grid / filter ---
+tech_view_details: "View details"
+tech_filter_by_domain: "Filter by field"
+tech_filter_all: "All"
+tech_domains_label: "Technology fields"
+tech_profile_label: "technology details"
+tech_profiles_aria: "Technologies"
+tech_empty_for_domain: "No technologies in this field yet."
+tech_count_all:
+  other: "{{ .total }} technologies"
+tech_sample_badge: "Sample data — prototype"
+tech_institution_intro: "Transfer-ready technologies from {{ .name }}, curated by 123 Factory for European partners."
+institutions_intro: "Partner universities and institutes whose research is featured in the showroom. Select one to see all of its technologies."
+
+# --- Technology facts ---
+tech_fact_institution: "Source institution"
+tech_fact_trl: "Maturity (TRL)"
+tech_fact_ip: "IP status"
+tech_fact_collaboration: "Preferred collaboration"
+tech_fact_researcher: "Researcher / owner"
+tech_fact_validation: "Validation status"
+
+# --- Request form (meeting / datasheet) ---
+request_button: "Request a meeting or datasheet"
+request_title: "Request a meeting or technical datasheet"
+request_subtitle: "Tell us about your interest and we will get back to you."
+request_type_label: "What would you like?"
+request_type_meeting: "Request a meeting"
+request_type_datasheet: "Request the technical datasheet"
+request_technology: "Technology of interest"
+request_first_name: "First name"
+request_last_name: "Last name"
+request_company_name: "Company / organization"
+request_email: "Work email"
+request_phone: "Phone"
+request_message: "Message"
+request_optional: "optional"
+request_consent: "I agree that 123 Factory may store and use the information above to respond to this request."
+request_cancel: "Cancel"
+request_submit: "Send request"
+request_sending: "Sending…"
+request_close: "Close"
+request_success: "Thanks — your request has been sent. We'll be in touch."
+request_error: "Something went wrong. Please try again, or email us directly."
+request_not_configured: "The request form is not configured yet. Please email us directly."
+request_consent_error: "Please confirm the consent checkbox to continue."

@@ -1,0 +1,393 @@
+{{ $pages := .pages }}
+{{ $context := .context }}
+{{ $showCount := .showCount | default true }}
+{{ $allDomains := slice }}
+{{ range $pages }}
+  {{ with .Params.domains }}
+    {{ range . }}
+      {{ $allDomains = $allDomains | append . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ $filterDomains := sort ($allDomains | uniq) }}
+
+<style>
+  .tech-filter-list {
+    margin-top: 1.5rem;
+  }
+
+  .tech-filter-count {
+    color: #737373;
+    font-size: 0.9rem;
+    margin: 0 0 1rem;
+  }
+
+  .dark .tech-filter-count {
+    color: #a3a3a3;
+  }
+
+  .tech-filter-bar {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0 0 1.25rem;
+  }
+
+  .tech-filter-label {
+    color: #525252;
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .dark .tech-filter-label {
+    color: #d4d4d4;
+  }
+
+  .tech-filter-button,
+  .tech-domain {
+    border-radius: 999px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+
+  .tech-filter-button {
+    background: #ffffff;
+    border: 1px solid #d4d4d4;
+    color: #404040;
+    font-size: 0.78rem;
+    font-weight: 750;
+    padding: 0.52rem 0.72rem;
+  }
+
+  .tech-filter-button:hover {
+    border-color: #4c9b87;
+    color: #2f7f6d;
+  }
+
+  .tech-filter-button.is-active {
+    background: #4c9b87;
+    border-color: #4c9b87;
+    color: #ffffff;
+  }
+
+  .dark .tech-filter-button {
+    background: rgba(38, 38, 38, 0.84);
+    border-color: rgba(212, 212, 212, 0.2);
+    color: #e5e5e5;
+  }
+
+  .dark .tech-filter-button:hover {
+    border-color: #69b7a2;
+    color: #8bd2be;
+  }
+
+  .dark .tech-filter-button.is-active {
+    background: #69b7a2;
+    border-color: #69b7a2;
+    color: #101010;
+  }
+
+  .tech-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  }
+
+  .tech-card {
+    background: #ffffff;
+    border: 1px solid #d4d4d4;
+    border-radius: 0.5rem;
+    box-shadow: 0 12px 30px rgba(22, 22, 22, 0.08);
+    display: flex;
+    flex-direction: column;
+    min-height: 15rem;
+    padding: 1.15rem;
+  }
+
+  .dark .tech-card {
+    background: rgba(28, 28, 28, 0.88);
+    border-color: rgba(212, 212, 212, 0.16);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32);
+  }
+
+  .tech-card:hover {
+    border-color: rgba(76, 155, 135, 0.58);
+    box-shadow: 0 18px 44px rgba(22, 22, 22, 0.12);
+  }
+
+  .dark .tech-card:hover {
+    border-color: rgba(105, 183, 162, 0.64);
+    box-shadow: 0 18px 44px rgba(76, 155, 135, 0.16);
+  }
+
+  .tech-card-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .tech-card-toprow {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tech-card-trl {
+    background: rgba(76, 155, 135, 0.12);
+    border: 1px solid rgba(76, 155, 135, 0.42);
+    border-radius: 999px;
+    color: #2f7f6d;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    padding: 0.32rem 0.55rem;
+  }
+
+  .dark .tech-card-trl {
+    background: rgba(105, 183, 162, 0.14);
+    border-color: rgba(105, 183, 162, 0.44);
+    color: #8bd2be;
+  }
+
+  .tech-card-sample {
+    background: rgba(220, 74, 211, 0.1);
+    border: 1px solid rgba(220, 74, 211, 0.4);
+    border-radius: 999px;
+    color: #a02898;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .dark .tech-card-sample {
+    color: #f4a8ee;
+  }
+
+  .tech-card-domains {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.85rem;
+  }
+
+  .tech-domain {
+    background: rgba(76, 155, 135, 0.12);
+    border: 1px solid rgba(76, 155, 135, 0.42);
+    color: #2f7f6d;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.42rem 0.58rem;
+  }
+
+  .tech-domain:hover,
+  .tech-domain.is-active {
+    background: #4c9b87;
+    border-color: #4c9b87;
+    color: #ffffff;
+  }
+
+  .dark .tech-domain {
+    background: rgba(105, 183, 162, 0.14);
+    border-color: rgba(105, 183, 162, 0.44);
+    color: #8bd2be;
+  }
+
+  .dark .tech-domain:hover,
+  .dark .tech-domain.is-active {
+    background: #69b7a2;
+    border-color: #69b7a2;
+    color: #101010;
+  }
+
+  .tech-card-title {
+    color: #171717;
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 850;
+    line-height: 1.25;
+    margin-top: 0.65rem;
+    text-decoration: none;
+  }
+
+  .tech-card-title:hover {
+    color: #2f7f6d;
+    text-decoration: underline;
+    text-underline-offset: 0.2rem;
+  }
+
+  .dark .tech-card-title {
+    color: #f5f5f5;
+  }
+
+  .dark .tech-card-title:hover {
+    color: #8bd2be;
+  }
+
+  .tech-card-source {
+    color: #737373;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 0.3rem;
+  }
+
+  .dark .tech-card-source {
+    color: #a3a3a3;
+  }
+
+  .tech-card-summary {
+    color: #525252;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    margin-top: 0.72rem;
+  }
+
+  .dark .tech-card-summary {
+    color: #d4d4d4;
+  }
+
+  .tech-card-collab {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 1rem;
+  }
+
+  .tech-card-collab-tag {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    color: #334155;
+    font-size: 0.75rem;
+    line-height: 1;
+    padding: 0.4rem 0.55rem;
+  }
+
+  .dark .tech-card-collab-tag {
+    background: rgba(148, 163, 184, 0.1);
+    border-color: rgba(148, 163, 184, 0.18);
+    color: #e5e7eb;
+  }
+
+  .tech-card-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 1rem;
+  }
+
+  .tech-card-link {
+    color: #4c9b87;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .tech-card-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2rem;
+  }
+
+  .tech-empty {
+    color: #737373;
+    display: none;
+    font-size: 0.95rem;
+    grid-column: 1 / -1;
+    padding: 1rem 0;
+  }
+
+  .dark .tech-empty {
+    color: #a3a3a3;
+  }
+</style>
+
+<section class="tech-filter-list" data-tech-filter-root data-tech-locale="{{ $context.Site.Language.Lang }}">
+  {{ if $showCount }}
+    <p class="tech-filter-count" data-tech-count data-total-count="{{ len $pages }}">{{ i18n "tech_count_all" (dict "total" (len $pages)) }}</p>
+  {{ end }}
+
+  {{ if gt (len $filterDomains) 0 }}
+    <div class="tech-filter-bar">
+      <span class="tech-filter-label">{{ i18n "tech_filter_by_domain" }}</span>
+      <button class="tech-filter-button is-active" type="button" data-filter-domain="all">{{ i18n "tech_filter_all" }}</button>
+      {{ range $filterDomains }}
+        <button class="tech-filter-button" type="button" data-filter-domain="{{ . }}">{{ . }}</button>
+      {{ end }}
+    </div>
+  {{ end }}
+
+  <section class="tech-grid" aria-label="{{ i18n "tech_profiles_aria" }}">
+    {{ range $pages }}
+      {{ partial "technology-card.html" . }}
+    {{ end }}
+    <p class="tech-empty" data-tech-empty>{{ i18n "tech_empty_for_domain" }}</p>
+  </section>
+</section>
+
+<script>
+  (() => {
+    document.querySelectorAll("[data-tech-filter-root]").forEach((root) => {
+      const cards = Array.from(root.querySelectorAll(".tech-card"));
+      const buttons = Array.from(root.querySelectorAll("[data-filter-domain]"));
+      const count = root.querySelector("[data-tech-count]");
+      const emptyState = root.querySelector("[data-tech-empty]");
+      const params = new URLSearchParams(window.location.search);
+
+      const countLabel = (visible, total, domain) => {
+        return domain === "all" ? `${total} technologies` : `${visible} of ${total} technologies`;
+      };
+
+      const updateUrl = (domain) => {
+        const nextUrl = new URL(window.location.href);
+        if (domain === "all") {
+          nextUrl.searchParams.delete("domain");
+        } else {
+          nextUrl.searchParams.set("domain", domain);
+        }
+        window.history.replaceState({}, "", nextUrl);
+      };
+
+      const applyFilter = (domain) => {
+        let visibleCount = 0;
+        cards.forEach((card) => {
+          const domains = (card.dataset.techDomains || "").split("||").filter(Boolean);
+          const isVisible = domain === "all" || domains.includes(domain);
+          card.style.display = isVisible ? "" : "none";
+          if (isVisible) visibleCount += 1;
+        });
+
+        buttons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.filterDomain === domain);
+        });
+
+        if (count) {
+          const total = count.dataset.totalCount || cards.length;
+          count.textContent = countLabel(visibleCount, total, domain);
+        }
+
+        if (emptyState) {
+          emptyState.style.display = visibleCount === 0 ? "block" : "none";
+        }
+      };
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const domain = button.dataset.filterDomain || "all";
+          applyFilter(domain);
+          updateUrl(domain);
+        });
+      });
+
+      const initialDomain = params.get("domain") || "all";
+      const knownDomain = buttons.some((button) => button.dataset.filterDomain === initialDomain)
+        ? initialDomain
+        : "all";
+      applyFilter(knownDomain);
+    });
+  })();
+</script>

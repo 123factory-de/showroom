@@ -1,0 +1,18 @@
+disabled = false
+languageCode = "en"
+languageName = "English"
+weight = 1
+title = "123 Factory Tech Showroom"
+
+[params]
+  displayName = "EN"
+  isoCode = "en"
+  rtl = false
+  dateFormat = "2 January 2006"
+  description = "A showroom of transfer-ready technologies from Korean university and institute researchers — open for licensing, joint development, and PoC with European industry partners."
+
+[params.author]
+  name = "123 Factory Tech Showroom"
+  headline = "Transfer-ready technologies from Korean research, open to European partners."
+  bio = "123 Factory connects research from universities and institutes in Korea with potential buyers, licensees, and industry partners across Germany and Europe."
+  links = []
